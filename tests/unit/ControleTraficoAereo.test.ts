@@ -19,7 +19,8 @@ describe('ControleTraficoAereo - Testes de Unidade com Mock', () => {
 
     mockAeroporto = new MockAeroporto('Teste', 'TST') as jest.Mocked<Aeroporto>;
     mockAeronave = new MockAeronave('PT-TST', 'Teste', 0, 0) as jest.Mocked<Aeronave>;
-
+    mockAeronave.codigo = 'PT-TST';
+    
     controle = new ControleTraficoAereo([mockAeroporto]);
   });
 
@@ -39,8 +40,8 @@ describe('ControleTraficoAereo - Testes de Unidade com Mock', () => {
       mockAeronave.decolar.mockReturnValue('Decolou mock');
 
       const resultado = controle.autorizarDecolagem('PT-TST', 'TST');
-      
-      expect(resultado).toBe('Decolou mock');
+
+      expect(resultado.message).toBe('Decolou mock'); // Alterado aqui
       expect(mockAeroporto.registrarEvento).toHaveBeenCalledWith(
         'Decolagem autorizada para PT-TST'
       );
@@ -54,7 +55,7 @@ describe('ControleTraficoAereo - Testes de Unidade com Mock', () => {
     test('deve lançar erro para aeronave não encontrada', () => {
       mockAeroporto.codigoIATA = 'TST';
       mockAeroporto.buscarAeronavePorCodigo.mockReturnValue(undefined);
-      
+
       expect(() => controle.autorizarDecolagem('PT-TST', 'TST'))
         .toThrow('Aeronave PT-TST não encontrada no aeroporto TST');
     });
@@ -62,18 +63,19 @@ describe('ControleTraficoAereo - Testes de Unidade com Mock', () => {
 
   describe('autorizarPouso', () => {
     test('deve autorizar pouso válido', () => {
+      mockAeronave.codigo = 'PT-TST';
+
       mockAeroporto.codigoIATA = 'TST';
       mockAeronave.pousar.mockReturnValue('Pousou mock');
 
       const resultado = controle.autorizarPouso(mockAeronave, 'TST');
-      
-      expect(resultado).toBe('Pousou mock');
+
+      expect(resultado.message).toBe('Pousou mock');
       expect(mockAeroporto.adicionarAeronave).toHaveBeenCalledWith(mockAeronave);
       expect(mockAeroporto.registrarEvento).toHaveBeenCalledWith(
         'Pouso autorizado para PT-TST'
       );
     });
-
     test('deve lançar erro para aeroporto não encontrado', () => {
       expect(() => controle.autorizarPouso(mockAeronave, 'INV'))
         .toThrow('Aeroporto INV não encontrado');

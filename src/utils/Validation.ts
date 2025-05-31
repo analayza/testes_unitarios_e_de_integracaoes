@@ -1,6 +1,6 @@
 export default class Validation {
 
     constructor(
-        message: string = "",
-        sucess: boolean = true) { }
+        public message: string = "",
+        public sucess: boolean = true) { }
 }
